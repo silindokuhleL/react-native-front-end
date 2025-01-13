@@ -1,74 +1,109 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { Image, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Mapiyeye's First React Native App!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+export default function LoginScreen() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleLogin = () => {
+        console.log('Login attempted with:', email, password);
+    };
+
+    return (
+        <ScrollView contentContainerStyle={styles.container}>
+            <Image
+                source={require('@/assets/images/react-native-logo.webp')}
+                style={styles.logo}
+            />
+            <ThemedView style={styles.formContainer}>
+                <ThemedText type="title" style={styles.title}>Welcome Back</ThemedText>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                />
+                <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                    <ThemedText type="defaultSemiBold" style={styles.loginButtonText}>Log In</ThemedText>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                    <ThemedText style={styles.forgotPassword}>Forgot Password?</ThemedText>
+                </TouchableOpacity>
+            </ThemedView>
+            <ThemedView style={styles.signupContainer}>
+                <ThemedText>Don't have an account? </ThemedText>
+                <TouchableOpacity>
+                    <ThemedText type="defaultSemiBold" style={styles.signupText}>Sign Up</ThemedText>
+                </TouchableOpacity>
+            </ThemedView>
+        </ScrollView>
+    );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+    container: {
+        flexGrow: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
+    logo: {
+        height: 100,
+        width: 100,
+        marginBottom: 40,
+    },
+    formContainer: {
+        width: '100%',
+        maxWidth: 400,
+        alignItems: 'center',
+    },
+    title: {
+        fontSize: 24,
+        marginBottom: 20,
+    },
+    input: {
+        width: '100%',
+        height: 50,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        marginBottom: 15,
+    },
+    loginButton: {
+        width: '100%',
+        height: 50,
+        backgroundColor: '#A1CEDC',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 5,
+        marginBottom: 15,
+    },
+    loginButtonText: {
+        color: '#fff',
+        fontSize: 16,
+    },
+    forgotPassword: {
+        marginBottom: 20,
+    },
+    signupContainer: {
+        flexDirection: 'row',
+        marginTop: 20,
+    },
+    signupText: {
+        color: '#A1CEDC',
+    },
 });
+

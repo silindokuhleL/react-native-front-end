@@ -36,3 +36,15 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+# React Native
+ios/Pods/
+android/.gradle/
+android/app/build/
+build/
+*.iml
+*.lock
+*.log
+.idea/
+
+# Expo
+.expo-shared/

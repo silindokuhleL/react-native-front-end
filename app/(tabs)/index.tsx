@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { Image, StyleSheet, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, ScrollView, TextInput, TouchableOpacity, Dimensions } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+
+const { width } = Dimensions.get('window');
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
@@ -14,38 +17,67 @@ export default function LoginScreen() {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
+            <LinearGradient
+                colors={['#4A90E2', '#67B26F']}
+                style={styles.gradientBackground}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+            />
             <Image
                 source={require('@/assets/images/react-logo.webp')}
                 style={styles.logo}
             />
             <ThemedView style={styles.formContainer}>
                 <ThemedText type="title" style={styles.title}>Welcome Back</ThemedText>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Email"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                />
+                <ThemedText style={styles.subtitle}>Sign in to continue</ThemedText>
+
+                <ThemedView style={styles.inputContainer}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Email"
+                        placeholderTextColor="#999"
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                    />
+                </ThemedView>
+
+                <ThemedView style={styles.inputContainer}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Password"
+                        placeholderTextColor="#999"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                    />
+                </ThemedView>
+
                 <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                    <ThemedText type="defaultSemiBold" style={styles.loginButtonText}>Log In</ThemedText>
+                    <LinearGradient
+                        colors={['#4A90E2', '#357ABD']}
+                        style={styles.gradientButton}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                    >
+                        <ThemedText type="defaultSemiBold" style={styles.loginButtonText}>
+                            Log In
+                        </ThemedText>
+                    </LinearGradient>
                 </TouchableOpacity>
-                <TouchableOpacity>
+
+                <TouchableOpacity style={styles.forgotPasswordButton}>
                     <ThemedText style={styles.forgotPassword}>Forgot Password?</ThemedText>
                 </TouchableOpacity>
             </ThemedView>
+
             <ThemedView style={styles.signupContainer}>
-                <ThemedText>Don't have an account? </ThemedText>
+                <ThemedText style={styles.signupText}>Don't have an account? </ThemedText>
                 <TouchableOpacity>
-                    <ThemedText type="defaultSemiBold" style={styles.signupText}>Sign Up</ThemedText>
+                    <ThemedText type="defaultSemiBold" style={styles.signupLink}>
+                        Sign Up
+                    </ThemedText>
                 </TouchableOpacity>
             </ThemedView>
         </ScrollView>
@@ -57,53 +89,101 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20,
+        minHeight: '100%',
+    },
+    gradientBackground: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        height: '50%',
+        opacity: 0.1,
     },
     logo: {
-        height: 100,
-        width: 100,
+        height: 120,
+        width: 120,
         marginBottom: 40,
+        borderRadius: 60,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
     },
     formContainer: {
-        width: '100%',
-        maxWidth: 400,
+        width: width > 400 ? 400 : width - 40,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
+        padding: 24,
         alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 5,
     },
     title: {
-        fontSize: 24,
-        marginBottom: 20,
+        fontSize: 28,
+        fontWeight: '700',
+        color: '#333',
+        marginBottom: 8,
+    },
+    subtitle: {
+        fontSize: 16,
+        color: '#666',
+        marginBottom: 32,
+    },
+    inputContainer: {
+        width: '100%',
+        marginBottom: 16,
+        borderRadius: 12,
+        backgroundColor: '#F5F8FA',
+        overflow: 'hidden',
     },
     input: {
         width: '100%',
-        height: 50,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
-        paddingHorizontal: 10,
-        marginBottom: 15,
+        height: 56,
+        paddingHorizontal: 16,
+        fontSize: 16,
+        color: '#333',
     },
     loginButton: {
         width: '100%',
-        height: 50,
-        backgroundColor: '#A1CEDC',
+        height: 56,
+        marginTop: 8,
+        borderRadius: 12,
+        overflow: 'hidden',
+    },
+    gradientButton: {
+        width: '100%',
+        height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: 5,
-        marginBottom: 15,
     },
     loginButtonText: {
-        color: '#fff',
-        fontSize: 16,
+        color: '#FFFFFF',
+        fontSize: 18,
+        fontWeight: '600',
+    },
+    forgotPasswordButton: {
+        marginTop: 16,
+        padding: 8,
     },
     forgotPassword: {
-        marginBottom: 20,
+        color: '#4A90E2',
+        fontSize: 14,
     },
     signupContainer: {
         flexDirection: 'row',
-        marginTop: 20,
+        marginTop: 24,
+        padding: 16,
     },
     signupText: {
-        color: '#A1CEDC',
+        fontSize: 16,
+        color: '#666',
+    },
+    signupLink: {
+        fontSize: 16,
+        color: '#4A90E2',
+        fontWeight: '600',
     },
 });
-

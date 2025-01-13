@@ -15,7 +15,7 @@ export default function LoginScreen() {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Image
-                source={require('@/assets/images/react-native-logo.webp')}
+                source={require('@/assets/images/react-logo.webp')}
                 style={styles.logo}
             />
             <ThemedView style={styles.formContainer}>

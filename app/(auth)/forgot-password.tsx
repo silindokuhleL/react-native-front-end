@@ -1,8 +1,8 @@
+import { router } from 'expo-router'
 import React, { useState } from 'react'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { StyleSheet, ScrollView, TextInput, TouchableOpacity, Dimensions } from 'react-native'
-import { router } from 'expo-router'
 
 const { width } = Dimensions.get('window')
 
@@ -61,7 +61,64 @@ export default function ForgotPasswordScreen() {
 }
 
 const styles = StyleSheet.create({
-    // ... similar styles as login screen with some adjustments
+    container: {
+        flexGrow: 1,
+    },
+    background: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F7F9FC',
+        padding: 20,
+        minHeight: '100%',
+    },
+    logo: {
+        height: 120,
+        width: 120,
+        marginBottom: 40,
+        borderRadius: 60,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+    },
+    formContainer: {
+        width: width > 400 ? 400 : width - 40,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
+        padding: 24,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 5,
+    },
+    title: {
+        fontSize: 28,
+        fontWeight: '700',
+        color: '#333',
+        marginBottom: 8,
+    },
+    subtitle: {
+        fontSize: 16,
+        color: '#666',
+        marginBottom: 32,
+    },
+    inputContainer: {
+        width: '100%',
+        marginBottom: 16,
+        borderRadius: 12,
+        backgroundColor: '#F5F8FA',
+        overflow: 'hidden',
+    },
+    input: {
+        width: '100%',
+        height: 56,
+        paddingHorizontal: 16,
+        fontSize: 16,
+        color: '#333',
+    },
     resetButton: {
         width: '100%',
         height: 56,

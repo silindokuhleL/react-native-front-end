@@ -1,8 +1,14 @@
+import {
+    Image,
+    StyleSheet,
+    ScrollView,
+    TextInput,
+    TouchableOpacity,
+    Dimensions } from 'react-native'
+import { router } from 'expo-router'
 import React, { useState } from 'react'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
-import { Image, StyleSheet, ScrollView, TextInput, TouchableOpacity, Dimensions } from 'react-native'
-import { router } from 'expo-router'
 
 const { width } = Dimensions.get('window')
 
@@ -12,9 +18,9 @@ export default function LoginScreen() {
 
     const handleLogin = () => {
         // Add your login logic here
-        console.log('Login attempted with:', email, password)
         // On successful login:
         // router.replace('/(tabs)/')
+        console.log('Login attempted with:', email, password)
     }
 
     const handleRegister = () => {

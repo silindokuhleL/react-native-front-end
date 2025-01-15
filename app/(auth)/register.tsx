@@ -1,29 +1,28 @@
-import axios from 'lib/axios'
 import { router } from 'expo-router'
 import React, { useState } from 'react'
+import { useAuth } from '@/hooks/auth'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { Image, StyleSheet, ScrollView, TextInput, TouchableOpacity, Dimensions } from 'react-native'
-import { useAuth } from '@/hooks/auth';
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get('window')
 
 export default function RegisterScreen() {
-    const { register, errors, loading, setErrors } = useAuth();
+    const { register, errors, loading, setErrors } = useAuth()
 
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [name, setName] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
 
-    const handleRegister = () => {
-        register({
+    const  handleRegister = async () => {
+        await register({
             name,
             email,
             password,
             password_confirmation: confirmPassword,
-        });
-    };
+        })
+    }
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -47,8 +46,8 @@ export default function RegisterScreen() {
                             placeholderTextColor="#999"
                             value={name}
                             onChangeText={(text) => {
-                                setName(text);
-                                setErrors((prev) => ({ ...prev, name: '' }));
+                                setName(text)
+                                setErrors((prev) => ({ ...prev, name: '' }))
                             }}
                             autoCapitalize="words"
                         />
@@ -62,8 +61,8 @@ export default function RegisterScreen() {
                             placeholderTextColor="#999"
                             value={email}
                             onChangeText={(text) => {
-                                setEmail(text);
-                                setErrors((prev) => ({ ...prev, email: '' }));
+                                setEmail(text)
+                                setErrors((prev) => ({ ...prev, email: '' }))
                             }}
                             keyboardType="email-address"
                             autoCapitalize="none"
@@ -78,8 +77,8 @@ export default function RegisterScreen() {
                             placeholderTextColor="#999"
                             value={password}
                             onChangeText={(text) => {
-                                setPassword(text);
-                                setErrors((prev) => ({ ...prev, password: '' }));
+                                setPassword(text)
+                                setErrors((prev) => ({ ...prev, password: '' }))
                             }}
                             secureTextEntry
                         />
@@ -93,8 +92,8 @@ export default function RegisterScreen() {
                             placeholderTextColor="#999"
                             value={confirmPassword}
                             onChangeText={(text) => {
-                                setConfirmPassword(text);
-                                setErrors((prev) => ({ ...prev, password_confirmation: '' }));
+                                setConfirmPassword(text)
+                                setErrors((prev) => ({ ...prev, password_confirmation: '' }))
                             }}
                             secureTextEntry
                         />
@@ -125,7 +124,7 @@ export default function RegisterScreen() {
                 </ThemedView>
             </ThemedView>
         </ScrollView>
-    );
+    )
 }
 
 const styles = StyleSheet.create({

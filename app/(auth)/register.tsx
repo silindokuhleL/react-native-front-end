@@ -4,114 +4,26 @@ import React, { useState } from 'react'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { Image, StyleSheet, ScrollView, TextInput, TouchableOpacity, Dimensions } from 'react-native'
+import { useAuth } from '@/hooks/auth';
 
-const { width } = Dimensions.get('window')
+const { width } = Dimensions.get('window');
+
 export default function RegisterScreen() {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [confirmPassword, setConfirmPassword] = useState('')
-    const [name, setName] = useState('')
-    const [error, setError] = useState('')
-    const [loading, setLoading] = useState(false)
-    const [errors, setErrors] = useState({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
-    })
+    const { register, errors, loading, setErrors } = useAuth();
 
-    const validateForm = () => {
-        const newErrors = {
-            name: '',
-            email: '',
-            password: '',
-            confirmPassword: ''
-        }
-        let isValid = true
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
-        if (!name) {
-            newErrors.name = 'The name field is required'
-            isValid = false
-        } else {
-            if (name.length > 255) {
-                newErrors.name = 'The name must not be greater than 255 characters'
-                isValid = false
-            }
-        }
-
-        if (!email) {
-            newErrors.email = 'The email field is required'
-            isValid = false
-        } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
-            newErrors.email = 'The email must be a valid email address'
-            isValid = false
-        }
-
-        if (!password) {
-            newErrors.password = 'The password field is required'
-            isValid = false
-        } else if (password.length < 8) {
-            newErrors.password = 'The password must be at least 8 characters'
-            isValid = false
-        }
-
-        if (!confirmPassword) {
-            newErrors.confirmPassword = 'The password confirmation field is required'
-            isValid = false
-        } else if (password !== confirmPassword) {
-            newErrors.confirmPassword = 'The password confirmation does not match'
-            isValid = false
-        }
-
-        setErrors(newErrors)
-        return isValid
-    }
-
-    const handleRegister = async () => {
-        setLoading(true)
-        setError('')
-
-        if (!validateForm()) {
-            setLoading(false)
-            return
-        }
-
-        try {
-            const response = await axios.post('/api/register', {
-                name,
-                email,
-                password,
-                password_confirmation: confirmPassword
-            })
-
-            if (response.data) {
-                router.replace('/(tabs)/')
-            }
-        } catch (err: any) {
-            if (err.response?.data?.errors) {
-                const serverErrors = err.response.data.errors
-                const newErrors = { ...errors }
-                
-                Object.entries(serverErrors).forEach(([key, messages]) => {
-                    if (Array.isArray(messages) && messages.length > 0) {
-                        if (key === 'password_confirmation') {
-                            newErrors.confirmPassword = messages[0]
-                        } else {
-                            newErrors[key as keyof typeof newErrors] = messages[0]
-                        }
-                    }
-                })
-                
-                setErrors(newErrors)
-            } else {
-                setError(err.response?.data?.message || 'Registration failed. Please try again.')
-            }
-            console.error('Registration error:', err)
-        } finally {
-            setLoading(false)
-        }
-    }
-
+    const handleRegister = () => {
+        register({
+            name,
+            email,
+            password,
+            password_confirmation: confirmPassword,
+        });
+    };
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -121,8 +33,12 @@ export default function RegisterScreen() {
                     style={styles.logo}
                 />
                 <ThemedView style={styles.formContainer}>
-                    <ThemedText type="title" style={styles.title}>Create Account</ThemedText>
-                    <ThemedText style={styles.subtitle}>Sign up to get started</ThemedText>
+                    <ThemedText type="title" style={styles.title}>
+                        Create Account
+                    </ThemedText>
+                    <ThemedText style={styles.subtitle}>
+                        Sign up to get started
+                    </ThemedText>
 
                     <ThemedView style={styles.inputContainer}>
                         <TextInput
@@ -131,12 +47,12 @@ export default function RegisterScreen() {
                             placeholderTextColor="#999"
                             value={name}
                             onChangeText={(text) => {
-                                setName(text)
-                                setErrors(prev => ({ ...prev, name: '' }))
+                                setName(text);
+                                setErrors((prev) => ({ ...prev, name: '' }));
                             }}
                             autoCapitalize="words"
                         />
-                        {errors.name ? <ThemedText style={styles.fieldError}>{errors.name}</ThemedText> : null}
+                        {errors.name && <ThemedText style={styles.fieldError}>{errors.name}</ThemedText>}
                     </ThemedView>
 
                     <ThemedView style={styles.inputContainer}>
@@ -146,13 +62,13 @@ export default function RegisterScreen() {
                             placeholderTextColor="#999"
                             value={email}
                             onChangeText={(text) => {
-                                setEmail(text)
-                                setErrors(prev => ({ ...prev, email: '' }))
+                                setEmail(text);
+                                setErrors((prev) => ({ ...prev, email: '' }));
                             }}
                             keyboardType="email-address"
                             autoCapitalize="none"
                         />
-                        {errors.email ? <ThemedText style={styles.fieldError}>{errors.email}</ThemedText> : null}
+                        {errors.email && <ThemedText style={styles.fieldError}>{errors.email}</ThemedText>}
                     </ThemedView>
 
                     <ThemedView style={styles.inputContainer}>
@@ -162,47 +78,46 @@ export default function RegisterScreen() {
                             placeholderTextColor="#999"
                             value={password}
                             onChangeText={(text) => {
-                                setPassword(text)
-                                setErrors(prev => ({ ...prev, password: '' }))
+                                setPassword(text);
+                                setErrors((prev) => ({ ...prev, password: '' }));
                             }}
                             secureTextEntry
                         />
-                        {errors.password ? <ThemedText style={styles.fieldError}>{errors.password}</ThemedText> : null}
+                        {errors.password && <ThemedText style={styles.fieldError}>{errors.password}</ThemedText>}
                     </ThemedView>
 
                     <ThemedView style={styles.inputContainer}>
                         <TextInput
-                            style={[styles.input, errors.confirmPassword ? styles.inputError : null]}
+                            style={[styles.input, errors.password_confirmation ? styles.inputError : null]}
                             placeholder="Confirm Password"
                             placeholderTextColor="#999"
                             value={confirmPassword}
                             onChangeText={(text) => {
-                                setConfirmPassword(text)
-                                setErrors(prev => ({ ...prev, confirmPassword: '' }))
+                                setConfirmPassword(text);
+                                setErrors((prev) => ({ ...prev, password_confirmation: '' }));
                             }}
                             secureTextEntry
                         />
-                        {errors.confirmPassword ? <ThemedText style={styles.fieldError}>{errors.confirmPassword}</ThemedText> : null}
+                        {errors.password_confirmation && (
+                            <ThemedText style={styles.fieldError}>{errors.password_confirmation}</ThemedText>
+                        )}
                     </ThemedView>
 
                     <TouchableOpacity
-                        style={styles.registerButton}
+                        style={[styles.registerButton, loading && { opacity: 0.7 }]}
                         onPress={handleRegister}
                         activeOpacity={0.9}
+                        disabled={loading}
                     >
                         <ThemedText type="defaultSemiBold" style={styles.registerButtonText}>
-                            Sign Up
+                            {loading ? 'Signing Up...' : 'Sign Up'}
                         </ThemedText>
                     </TouchableOpacity>
-                    {error && <ThemedText style={styles.errorText}>{error}</ThemedText>}
                 </ThemedView>
 
                 <ThemedView style={styles.loginContainer}>
                     <ThemedText style={styles.loginText}>Already have an account? </ThemedText>
-                    <TouchableOpacity
-                        activeOpacity={0.7}
-                        onPress={() => router.back()}
-                    >
+                    <TouchableOpacity activeOpacity={0.7} onPress={() => router.back()}>
                         <ThemedText type="defaultSemiBold" style={styles.loginLink}>
                             Log In
                         </ThemedText>
@@ -210,7 +125,7 @@ export default function RegisterScreen() {
                 </ThemedView>
             </ThemedView>
         </ScrollView>
-    )
+    );
 }
 
 const styles = StyleSheet.create({

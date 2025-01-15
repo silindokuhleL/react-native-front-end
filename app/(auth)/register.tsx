@@ -1,3 +1,4 @@
+import axios from 'lib/axios'
 import { router } from 'expo-router'
 import React, { useState } from 'react'
 import { ThemedText } from '@/components/ThemedText'
@@ -5,19 +6,112 @@ import { ThemedView } from '@/components/ThemedView'
 import { Image, StyleSheet, ScrollView, TextInput, TouchableOpacity, Dimensions } from 'react-native'
 
 const { width } = Dimensions.get('window')
-
 export default function RegisterScreen() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [name, setName] = useState('')
+    const [error, setError] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [errors, setErrors] = useState({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+    })
 
-    const handleRegister = () => {
-        // Add registration logic here
-        console.log('Register attempted with:', { email, password, name })
-        // On successful registration:
-        // router.replace('/(tabs)/')
+    const validateForm = () => {
+        const newErrors = {
+            name: '',
+            email: '',
+            password: '',
+            confirmPassword: ''
+        }
+        let isValid = true
+
+        if (!name) {
+            newErrors.name = 'The name field is required'
+            isValid = false
+        } else {
+            if (name.length > 255) {
+                newErrors.name = 'The name must not be greater than 255 characters'
+                isValid = false
+            }
+        }
+
+        if (!email) {
+            newErrors.email = 'The email field is required'
+            isValid = false
+        } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+            newErrors.email = 'The email must be a valid email address'
+            isValid = false
+        }
+
+        if (!password) {
+            newErrors.password = 'The password field is required'
+            isValid = false
+        } else if (password.length < 8) {
+            newErrors.password = 'The password must be at least 8 characters'
+            isValid = false
+        }
+
+        if (!confirmPassword) {
+            newErrors.confirmPassword = 'The password confirmation field is required'
+            isValid = false
+        } else if (password !== confirmPassword) {
+            newErrors.confirmPassword = 'The password confirmation does not match'
+            isValid = false
+        }
+
+        setErrors(newErrors)
+        return isValid
     }
+
+    const handleRegister = async () => {
+        setLoading(true)
+        setError('')
+
+        if (!validateForm()) {
+            setLoading(false)
+            return
+        }
+
+        try {
+            const response = await axios.post('/api/register', {
+                name,
+                email,
+                password,
+                password_confirmation: confirmPassword
+            })
+
+            if (response.data) {
+                router.replace('/(tabs)/')
+            }
+        } catch (err: any) {
+            if (err.response?.data?.errors) {
+                const serverErrors = err.response.data.errors
+                const newErrors = { ...errors }
+                
+                Object.entries(serverErrors).forEach(([key, messages]) => {
+                    if (Array.isArray(messages) && messages.length > 0) {
+                        if (key === 'password_confirmation') {
+                            newErrors.confirmPassword = messages[0]
+                        } else {
+                            newErrors[key as keyof typeof newErrors] = messages[0]
+                        }
+                    }
+                })
+                
+                setErrors(newErrors)
+            } else {
+                setError(err.response?.data?.message || 'Registration failed. Please try again.')
+            }
+            console.error('Registration error:', err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -32,47 +126,63 @@ export default function RegisterScreen() {
 
                     <ThemedView style={styles.inputContainer}>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, errors.name ? styles.inputError : null]}
                             placeholder="Full Name"
                             placeholderTextColor="#999"
                             value={name}
-                            onChangeText={setName}
+                            onChangeText={(text) => {
+                                setName(text)
+                                setErrors(prev => ({ ...prev, name: '' }))
+                            }}
                             autoCapitalize="words"
                         />
+                        {errors.name ? <ThemedText style={styles.fieldError}>{errors.name}</ThemedText> : null}
                     </ThemedView>
 
                     <ThemedView style={styles.inputContainer}>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, errors.email ? styles.inputError : null]}
                             placeholder="Email"
                             placeholderTextColor="#999"
                             value={email}
-                            onChangeText={setEmail}
+                            onChangeText={(text) => {
+                                setEmail(text)
+                                setErrors(prev => ({ ...prev, email: '' }))
+                            }}
                             keyboardType="email-address"
                             autoCapitalize="none"
                         />
+                        {errors.email ? <ThemedText style={styles.fieldError}>{errors.email}</ThemedText> : null}
                     </ThemedView>
 
                     <ThemedView style={styles.inputContainer}>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, errors.password ? styles.inputError : null]}
                             placeholder="Password"
                             placeholderTextColor="#999"
                             value={password}
-                            onChangeText={setPassword}
+                            onChangeText={(text) => {
+                                setPassword(text)
+                                setErrors(prev => ({ ...prev, password: '' }))
+                            }}
                             secureTextEntry
                         />
+                        {errors.password ? <ThemedText style={styles.fieldError}>{errors.password}</ThemedText> : null}
                     </ThemedView>
 
                     <ThemedView style={styles.inputContainer}>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, errors.confirmPassword ? styles.inputError : null]}
                             placeholder="Confirm Password"
                             placeholderTextColor="#999"
                             value={confirmPassword}
-                            onChangeText={setConfirmPassword}
+                            onChangeText={(text) => {
+                                setConfirmPassword(text)
+                                setErrors(prev => ({ ...prev, confirmPassword: '' }))
+                            }}
                             secureTextEntry
                         />
+                        {errors.confirmPassword ? <ThemedText style={styles.fieldError}>{errors.confirmPassword}</ThemedText> : null}
                     </ThemedView>
 
                     <TouchableOpacity
@@ -84,11 +194,12 @@ export default function RegisterScreen() {
                             Sign Up
                         </ThemedText>
                     </TouchableOpacity>
+                    {error && <ThemedText style={styles.errorText}>{error}</ThemedText>}
                 </ThemedView>
 
                 <ThemedView style={styles.loginContainer}>
                     <ThemedText style={styles.loginText}>Already have an account? </ThemedText>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         activeOpacity={0.7}
                         onPress={() => router.back()}
                     >
@@ -194,4 +305,19 @@ const styles = StyleSheet.create({
         color: '#4A90E2',
         fontWeight: '600',
     },
-}) 
+    errorText: {
+        color: 'red',
+        marginTop: 10,
+    },
+    inputError: {
+        borderWidth: 1,
+        borderColor: '#FF3B30'
+    },
+    fieldError: {
+        color: '#FF3B30',
+        fontSize: 12,
+        marginTop: 4,
+        marginLeft: 4
+    }
+})
+

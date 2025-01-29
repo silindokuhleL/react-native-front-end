@@ -2,6 +2,10 @@ import axios from '@/lib/axios';
 import { useState } from 'react';
 import { router } from 'expo-router';
 
+interface LoginResponse {
+    token: string;
+}
+
 export const useAuth = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
@@ -11,10 +15,21 @@ export const useAuth = () => {
         setErrors({});
     
         try {
-            const response = await axios.post('/api/login', props);
+            const response = await axios.post<LoginResponse>('/api/login', props);
             console.log('Login response:', response);
+            
+            const token = response.data.token;
+            
+            // Make the user request with the token in Authorization header
+            const userResponse = await axios.get('/api/user', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const user = userResponse.data;
+            console.log(user);
+            
             if (response.status === 200 || response.status === 204) {
-                // Successful login, redirect to home or dashboard
                 router.replace('/(tabs)/');
                 return true;
             }

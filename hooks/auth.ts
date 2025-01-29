@@ -81,8 +81,11 @@ export const useAuth = () => {
 
         try {
             const response = await axios.post('/api/register', props);
-            if (response.data) {
-                router.replace('/(auth)/login');
+            if (response.data?.token) {
+                await tokenService.setToken(response.data.token);
+                const userResponse = await axios.get<User>('/api/user');
+                setUser(userResponse.data);
+                router.replace('/(tabs)/');
                 return response.data;
             }
         } catch (error: any) {
@@ -126,7 +129,7 @@ export const useAuth = () => {
     return {
         login,
         register,
-        logout, // Add logout to the returned object
+        logout, 
         errors,
         loading,
         setErrors,

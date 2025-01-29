@@ -4,18 +4,21 @@ import {
     ScrollView,
     TextInput,
     TouchableOpacity,
-    Dimensions } from 'react-native'
+    useWindowDimensions
+} from 'react-native'
 import { router } from 'expo-router'
 import React, { useState } from 'react'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
-
-const { width } = Dimensions.get('window')
+import { useTheme } from '@react-navigation/native'
 
 export default function LoginScreen() {
+    const { width } = useWindowDimensions()  // Use this hook instead of Dimensions.get
+    const { colors } = useTheme()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
+    
     const handleLogin = () => {
         // Add your login logic here
         // On successful login:
@@ -33,12 +36,12 @@ export default function LoginScreen() {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <ThemedView style={styles.background}>
+            <ThemedView style={[styles.background, { backgroundColor: colors.background }]}>
                 <Image
                     source={require('@/assets/images/react-logo.webp')}
                     style={styles.logo}
                 />
-                <ThemedView style={styles.formContainer}>
+                <ThemedView style={[styles.formContainer, { width: width > 400 ? 400 : width - 40 }]}>
                     <ThemedText type="title" style={styles.title}>Welcome Back</ThemedText>
                     <ThemedText style={styles.subtitle}>Sign in to continue</ThemedText>
 
@@ -123,7 +126,6 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
     },
     formContainer: {
-        width: width > 400 ? 400 : width - 40,
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
         padding: 24,
@@ -200,4 +202,4 @@ const styles = StyleSheet.create({
         color: '#4A90E2',
         fontWeight: '600',
     },
-}) 
+})

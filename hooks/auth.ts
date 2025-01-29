@@ -13,19 +13,28 @@ export const useAuth = () => {
         try {
             const response = await axios.post('/api/register', props);
             if (response.data) {
-                router.replace('/(tabs)/');
+                router.replace('/(auth)/login');
+                return response.data;
             }
         } catch (error: any) {
-            if (error.response?.status === 422) {
-                const serverErrors = error.response.data.errors;
-                const formattedErrors: Record<string, string> = {};
-                Object.entries(serverErrors).forEach(([key, value]) => {
-                    formattedErrors[key] = Array.isArray(value) ? value[0] : value;
+            console.error('Registration error:', {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status
+            });
+            
+            if (error.response?.status === 502) {
+                setErrors({
+                    general: 'Unable to connect to the server. Please check your connection and try again.'
                 });
-                setErrors(formattedErrors);
+            } else if (error.response?.data?.errors) {
+                setErrors(error.response.data.errors);
             } else {
-                console.error('Registration error:', error);
+                setErrors({
+                    general: 'An unexpected error occurred. Please try again.'
+                });
             }
+            throw error;
         } finally {
             setLoading(false);
         }

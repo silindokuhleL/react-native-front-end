@@ -7,6 +7,10 @@ interface LoginResponse {
     token: string;
 }
 
+interface RegisterResponse {
+    token: string;
+}
+
 export interface User {
     id: number;
     name: string;
@@ -80,7 +84,7 @@ export const useAuth = () => {
         setErrors({});
 
         try {
-            const response = await axios.post('/api/register', props);
+            const response = await axios.post<RegisterResponse>('/api/register', props);
             if (response.data?.token) {
                 await tokenService.setToken(response.data.token);
                 const userResponse = await axios.get<User>('/api/user');

@@ -1,6 +1,7 @@
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { useAuth } from '@/hooks/auth'
+import { Header } from '@/components/Header'
 
 export default function HomeScreen() {
     const { user } = useAuth()
@@ -15,6 +16,7 @@ export default function HomeScreen() {
 
     return (
         <ThemedView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+            <Header />
             {user ? (
                 <>
                     <ThemedText style={{ fontSize: 24, marginBottom: 10 }}>

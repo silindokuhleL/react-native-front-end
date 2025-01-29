@@ -109,9 +109,24 @@ export const useAuth = () => {
         }
     };
 
+    const logout = async () => {
+        setLoading(true);
+        try {
+            await axios.post('/api/logout');
+            await tokenService.removeToken();
+            setUser(null);
+            router.replace('/(auth)/login');
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return {
         login,
         register,
+        logout, // Add logout to the returned object
         errors,
         loading,
         setErrors,

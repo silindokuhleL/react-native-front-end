@@ -1,6 +1,7 @@
 import axios from '@/lib/axios';
 import { useState } from 'react';
 import { router } from 'expo-router';
+import { tokenService } from '@/services/tokenService';
 
 interface LoginResponse {
     token: string;
@@ -19,13 +20,9 @@ export const useAuth = () => {
             console.log('Login response:', response);
             
             const token = response.data.token;
+            tokenService.setToken(token);
             
-            // Make the user request with the token in Authorization header
-            const userResponse = await axios.get('/api/user', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            const userResponse = await axios.get('/api/user');
             const user = userResponse.data;
             console.log(user);
             

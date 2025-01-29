@@ -1,6 +1,6 @@
 import axios from '@/lib/axios';
-import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
+import { useState, useEffect } from 'react';
 import { tokenService } from '@/services/tokenService';
 
 interface LoginResponse {
@@ -71,7 +71,6 @@ export const useAuth = () => {
         try {
             const response = await axios.post<LoginResponse>('/api/login', props);
             
-            // Extract token from response if it contains HTML error output
             const tokenMatch = response.data.toString().match(/"token":"([^"]+)"/);
             const token = tokenMatch ? tokenMatch[1] : response.data?.token;
             
@@ -115,12 +114,37 @@ export const useAuth = () => {
 
         try {
             const response = await axios.post<RegisterResponse>('/api/register', props);
-            if (response.data?.token) {
-                await tokenService.setToken(response.data.token);
-                const userResponse = await axios.get<User>('/api/user');
-                setUser(userResponse.data);
+            
+            const tokenMatch = response.data.toString().match(/"token":"([^"]+)"/);
+            const token = tokenMatch ? tokenMatch[1] : response.data?.token;
+            
+            if (!token) {
+                setErrors({
+                    general: 'Registration failed. Please try again.'
+                });
+                return false;
+            }
+            
+            await tokenService.setToken(token);
+            
+            const userResponse = await axios.get<User>('/api/user');
+            let userData = userResponse.data;
+            
+            if (typeof userData === 'string') {
+                const userMatch = (userData as string).match(/{[^}]+}/);
+                if (userMatch) {
+                    try {
+                        userData = JSON.parse(userMatch[0]);
+                    } catch (e) {
+                        console.error('Failed to parse user data:', e);
+                    }
+                }
+            }
+            
+            if (userData && userData.id) {
+                setUser(userData);
                 router.replace('/(tabs)/');
-                return response.data;
+                return true;
             }
         } catch (error: any) {
             console.error('Registration error:', {

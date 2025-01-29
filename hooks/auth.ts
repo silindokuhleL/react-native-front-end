@@ -1,5 +1,5 @@
 import axios from '@/lib/axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { tokenService } from '@/services/tokenService';
 
@@ -7,9 +7,36 @@ interface LoginResponse {
     token: string;
 }
 
+export interface User {
+    id: number;
+    name: string;
+    email: string;
+    email_verified_at: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
 export const useAuth = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const initializeAuth = async () => {
+            try {
+                const token = await tokenService.getToken();
+                if (token) {
+                    const userResponse = await axios.get<User>('/api/user');
+                    setUser(userResponse.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch user:', error);
+                await tokenService.removeToken();
+            }
+        };
+
+        initializeAuth();
+    }, []);
 
     const login = async (props: { email: string; password: string }) => {
         setLoading(true);
@@ -17,14 +44,14 @@ export const useAuth = () => {
     
         try {
             const response = await axios.post<LoginResponse>('/api/login', props);
-            console.log('Login response:', response);
             
             const token = response.data.token;
-            tokenService.setToken(token);
+            await tokenService.setToken(token);
             
-            const userResponse = await axios.get('/api/user');
-            const user = userResponse.data;
-            console.log(user);
+            const userResponse = await axios.get<User>('/api/user');
+            const userData = userResponse.data;
+            console.log('User data:', userData)
+            setUser(userData);
             
             if (response.status === 200 || response.status === 204) {
                 router.replace('/(tabs)/');
@@ -87,6 +114,8 @@ export const useAuth = () => {
         register,
         errors,
         loading,
-        setErrors
+        setErrors,
+        user,
+        setUser
     };
 };

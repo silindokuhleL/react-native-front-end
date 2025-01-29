@@ -1,14 +1,25 @@
 import axios from '@/lib/axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const TOKEN_KEY = '@auth_token';
 
 export const tokenService = {
-    setToken(token: string) {
+    async setToken(token: string) {
         // Set token in axios default headers
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        // Store token in AsyncStorage
+        await AsyncStorage.setItem(TOKEN_KEY, token);
     },
 
-    removeToken() {
+    async getToken() {
+        return await AsyncStorage.getItem(TOKEN_KEY);
+    },
+
+    async removeToken() {
         // Remove token from axios default headers
         delete axios.defaults.headers.common['Authorization'];
+        // Remove token from AsyncStorage
+        await AsyncStorage.removeItem(TOKEN_KEY);
     },
 
     getAuthHeader(token: string) {

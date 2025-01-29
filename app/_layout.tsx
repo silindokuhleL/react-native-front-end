@@ -35,12 +35,11 @@ const theme = {
 
 export default function RootLayout() {
   useEffect(() => {
-    // Redirect to login screen on initial load
     router.replace('/(auth)/login')
   }, [])
 
   return (
-    <NavigationContainer theme={theme}>
+    <NavigationContainer >
       <Stack initialRouteName="(auth)">
         <Stack.Screen
           name="(auth)"

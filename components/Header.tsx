@@ -28,7 +28,7 @@ export function Header() {
                 style={styles.profileButton}
             >
                 <ThemedText style={styles.profileButtonText}>
-                    {user.name.charAt(0).toUpperCase()}
+                    {user.name?.charAt(0).toUpperCase()}
                 </ThemedText>
             </Pressable>
 

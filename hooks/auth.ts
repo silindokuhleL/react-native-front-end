@@ -29,9 +29,31 @@ export const useAuth = () => {
         const initializeAuth = async () => {
             try {
                 const token = await tokenService.getToken();
+                console.log('Token found:', token); // Debug token
+
                 if (token) {
                     const userResponse = await axios.get<User>('/api/user');
-                    setUser(userResponse.data);
+                    console.log('User response:', userResponse.data); // Debug user response
+                    
+                    // Parse user data if it's embedded in HTML
+                    let userData = userResponse.data;
+                    if (typeof userData === 'string') {
+                        const userMatch = (userData as string).match(/{[^}]+}/);
+                        if (userMatch) {
+                            try {
+                                userData = JSON.parse(userMatch[0]);
+                            } catch (e) {
+                                console.error('Failed to parse user data:', e);
+                            }
+                        }
+                    }
+                    
+                    if (userData && userData.id) {
+                        setUser(userData);
+                    } else {
+                        console.error('Invalid user data format:', userData);
+                        await tokenService.removeToken();
+                    }
                 }
             } catch (error) {
                 console.error('Failed to fetch user:', error);
@@ -49,7 +71,17 @@ export const useAuth = () => {
         try {
             const response = await axios.post<LoginResponse>('/api/login', props);
             
-            const token = response.data.token;
+            // Extract token from response if it contains HTML error output
+            const tokenMatch = response.data.toString().match(/"token":"([^"]+)"/);
+            const token = tokenMatch ? tokenMatch[1] : response.data?.token;
+            
+            if (!token) {
+                setErrors({
+                    email: 'Authentication failed. Please try again.'
+                });
+                return false;
+            }
+            
             await tokenService.setToken(token);
             
             const userResponse = await axios.get<User>('/api/user');
@@ -57,10 +89,8 @@ export const useAuth = () => {
             console.log('User data:', userData)
             setUser(userData);
             
-            if (response.status === 200 || response.status === 204) {
-                router.replace('/(tabs)/');
-                return true;
-            }
+            router.replace('/(tabs)/');
+            return true;
         } catch (error: any) {
             console.error('Login error:', {
                 message: error.message,

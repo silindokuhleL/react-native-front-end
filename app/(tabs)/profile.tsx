@@ -8,12 +8,23 @@ export default function ProfileScreen() {
 
     if (!user) return null;
 
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
+    const formatDate = (dateString: string | null) => {
+        if (!dateString) return 'Not available';
+        
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) {
+                return 'Invalid date';
+            }
+            
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        } catch (error) {
+            return 'Invalid date';
+        }
     };
 
     return (

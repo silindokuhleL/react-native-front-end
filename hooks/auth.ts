@@ -6,6 +6,36 @@ export const useAuth = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
 
+    const login = async (props: { email: string; password: string }) => {
+        setLoading(true);
+        setErrors({});
+    
+        try {
+            const response = await axios.post('/api/login', props);
+            console.log('Login response:', response);
+            if (response.status === 200 || response.status === 204) {
+                // Successful login, redirect to home or dashboard
+                router.replace('/(tabs)/');
+                return true;
+            }
+        } catch (error: any) {
+            console.error('Login error:', {
+                message: error.message,
+                response: error.response?.data
+            });
+            
+            if (error.response?.data?.errors) {
+                setErrors(error.response.data.errors);
+            } else {
+                setErrors({
+                    email: error.response?.data?.message || 'Login failed. Please try again.'
+                });
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const register = async (props: { name: string; email: string; password: string; password_confirmation: string }) => {
         setLoading(true);
         setErrors({});
@@ -41,6 +71,7 @@ export const useAuth = () => {
     };
 
     return {
+        login,
         register,
         errors,
         loading,

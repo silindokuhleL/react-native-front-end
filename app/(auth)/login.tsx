@@ -11,19 +11,17 @@ import React, { useState } from 'react'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { useTheme } from '@react-navigation/native'
+import { useAuth } from '@/hooks/auth'
 
 export default function LoginScreen() {
-    const { width } = useWindowDimensions()  // Use this hook instead of Dimensions.get
+    const { width } = useWindowDimensions()
     const { colors } = useTheme()
+    const { login, errors, loading, setErrors } = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    
-    const handleLogin = () => {
-        // Add your login logic here
-        // On successful login:
-        // router.replace('/(tabs)/')
-        console.log('Login attempted with:', email, password)
+    const handleLogin = async () => {
+        await login({ email, password });
     }
 
     const handleRegister = () => {
@@ -47,34 +45,47 @@ export default function LoginScreen() {
 
                     <ThemedView style={styles.inputContainer}>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, errors.email && styles.inputError]}
                             placeholder="Email"
                             placeholderTextColor="#999"
                             value={email}
-                            onChangeText={setEmail}
+                            onChangeText={(text) => {
+                                setEmail(text)
+                                setErrors(prev => ({ ...prev, email: '' }))
+                            }}
                             keyboardType="email-address"
                             autoCapitalize="none"
                         />
+                        {errors.email && (
+                            <ThemedText style={styles.fieldError}>{errors.email}</ThemedText>
+                        )}
                     </ThemedView>
 
                     <ThemedView style={styles.inputContainer}>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, errors.password && styles.inputError]}
                             placeholder="Password"
                             placeholderTextColor="#999"
                             value={password}
-                            onChangeText={setPassword}
+                            onChangeText={(text) => {
+                                setPassword(text)
+                                setErrors(prev => ({ ...prev, password: '' }))
+                            }}
                             secureTextEntry
                         />
+                        {errors.password && (
+                            <ThemedText style={styles.fieldError}>{errors.password}</ThemedText>
+                        )}
                     </ThemedView>
 
                     <TouchableOpacity
-                        style={styles.loginButton}
+                        style={[styles.loginButton, loading && { opacity: 0.7 }]}
                         onPress={handleLogin}
                         activeOpacity={0.9}
+                        disabled={loading}
                     >
                         <ThemedText type="defaultSemiBold" style={styles.loginButtonText}>
-                            Log In
+                            {loading ? 'Logging in...' : 'Log In'}
                         </ThemedText>
                     </TouchableOpacity>
 
@@ -99,10 +110,11 @@ export default function LoginScreen() {
                     </TouchableOpacity>
                 </ThemedView>
             </ThemedView>
-        </ScrollView>
+        </ScrollView>  // Fixed from </ScrolxlView>
     )
 }
 
+// Add these styles to your existing StyleSheet
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
@@ -202,4 +214,14 @@ const styles = StyleSheet.create({
         color: '#4A90E2',
         fontWeight: '600',
     },
+    inputError: {
+        borderWidth: 1,
+        borderColor: '#FF3B30'
+    },
+    fieldError: {
+        color: '#FF3B30',
+        fontSize: 12,
+        marginTop: 4,
+        marginLeft: 4
+    }
 })

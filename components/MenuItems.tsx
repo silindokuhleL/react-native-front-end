@@ -2,8 +2,13 @@ import { ThemedView } from './ThemedView';
 import { ThemedText } from './ThemedText';
 import { ScrollView, Image, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
+import { TextInput } from 'react-native';
 
 export function MenuItems() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [favorites, setFavorites] = useState<number[]>([]);
+
   const defaultImage = require('../assets/images/haircut.jpg');
 
   type CategoryName = 'Hair Services' | 'Nail Services' | 'Massage & Spa' | 'Facial & Skin';
@@ -113,95 +118,128 @@ export function MenuItems() {
     ],
   };
 
+  // Add this function before the return statement
+  const filterMenuItems = (items: typeof menuCategories[CategoryName], query: string) => {
+    if (!query) return items;
+    return items.filter(item => 
+      item.name.toLowerCase().includes(query.toLowerCase()) ||
+      item.description.toLowerCase().includes(query.toLowerCase())
+    );
+  };
+
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
-      {(Object.entries(menuCategories) as [CategoryName, typeof menuCategories[CategoryName]][]).map(([category, items]) => (
-        <View key={category}>
-          <ThemedView style={{ 
-            flexDirection: 'row', 
-            alignItems: 'center', 
-            padding: 15,
-            paddingBottom: 10 
-          }}>
-            <Ionicons name={categoryIcons[category]} size={24} color="#210883" />
-            <ThemedText style={{ 
-              fontSize: 20, 
-              fontWeight: 'bold',
-              marginLeft: 10
-            }}>
-              {category}
-            </ThemedText>
-          </ThemedView>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <ThemedView style={{ flexDirection: 'row', paddingHorizontal: 15 }}>
-              {items.map((item) => (
-                <ThemedView
-                  key={item.id}
-                  style={{
-                    marginRight: 15,
-                    padding: 12,
-                    borderRadius: 10,
-                    backgroundColor: '#f5f5f5',
-                    width: 180,
-                    height: 360,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.1,
-                    shadowRadius: 4,
-                    elevation: 3,
-                  }}
-                >
-                  <ThemedText style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 3 }}>
-                    {item.name}
-                  </ThemedText>
-                  <ThemedText style={{ fontSize: 14, color: '#210883', fontWeight: 'bold' }}>
-                    {item.price}
-                  </ThemedText>
-                  <Image 
-                    source={item.image || defaultImage}
-                    style={{
-                      width: 156,
-                      height: 120,
-                      borderRadius: 8,
-                      marginVertical: 8,
-                      alignSelf: 'center'
-                    }}
-                  />
-                  <ThemedText style={{ fontSize: 12, opacity: 0.7, marginBottom: 3 }}>
-                    {item.description}
-                  </ThemedText>
-                  <ThemedView style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 3 }}>
-                    <Ionicons name="star" size={14} color="#FFD700" />
-                    <ThemedText style={{ fontSize: 12, marginLeft: 4 }}>
-                      {item.rating} ({item.reviews})
-                    </ThemedText>
-                  </ThemedView>
-                  <ThemedText style={{ fontSize: 11, opacity: 0.5, marginBottom: 2 }}>
-                    {item.duration}
-                  </ThemedText>
-                  <ThemedText style={{ fontSize: 11, color: '#666', fontStyle: 'italic' }}>
-                    "{item.comments}"
-                  </ThemedText>
-                  <TouchableOpacity
-                    style={{
-                      backgroundColor: '#210883',
-                      padding: 10,
-                      borderRadius: 8,
-                      marginTop: 8,
-                      alignItems: 'center'
-                    }}
-                    onPress={() => {/* Add booking logic */}}
-                  >
-                    <ThemedText style={{ color: '#fff', fontSize: 14, fontWeight: 'bold' }}>
-                      Book Now
-                    </ThemedText>
-                  </TouchableOpacity>
+      <ThemedView style={{ padding: 15 }}>
+        <TextInput
+          placeholder="Search services..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          style={{
+            backgroundColor: '#fff',
+            padding: 10,
+            borderRadius: 8,
+            marginBottom: 10,
+            borderWidth: 1,
+            borderColor: '#e0e0e0'
+          }}
+        />
+      </ThemedView>
+      
+      {(Object.entries(menuCategories) as [CategoryName, typeof menuCategories[CategoryName]][])
+        .map(([category, items]) => {
+          const filteredItems = filterMenuItems(items, searchQuery);
+          
+          // Don't show category if no items match search
+          if (filteredItems.length === 0) return null;
+
+          return (
+            <View key={category}>
+              <ThemedView style={{ 
+                flexDirection: 'row', 
+                alignItems: 'center', 
+                padding: 15,
+                paddingBottom: 10 
+              }}>
+                <Ionicons name={categoryIcons[category]} size={24} color="#210883" />
+                <ThemedText style={{ 
+                  fontSize: 20, 
+                  fontWeight: 'bold',
+                  marginLeft: 10
+                }}>
+                  {category}
+                </ThemedText>
+              </ThemedView>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <ThemedView style={{ flexDirection: 'row', paddingHorizontal: 15 }}>
+                  {filteredItems.map((item) => (
+                    <ThemedView
+                      key={item.id}
+                      style={{
+                        marginRight: 15,
+                        padding: 12,
+                        borderRadius: 10,
+                        backgroundColor: '#f5f5f5',
+                        width: 180,
+                        height: 360,
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 4,
+                        elevation: 3,
+                      }}
+s                    >
+                      <ThemedText style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 3 }}>
+                        {item.name}
+                      </ThemedText>
+                      <ThemedText style={{ fontSize: 14, color: '#210883', fontWeight: 'bold' }}>
+                        {item.price}
+                      </ThemedText>
+                      <Image 
+                        source={item.image || defaultImage}
+                        style={{
+                          width: 156,
+                          height: 120,
+                          borderRadius: 8,
+                          marginVertical: 8,
+                          alignSelf: 'center'
+                        }}
+                      />
+                      <ThemedText style={{ fontSize: 12, opacity: 0.7, marginBottom: 3 }}>
+                        {item.description}
+                      </ThemedText>
+                      <ThemedView style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 3 }}>
+                        <Ionicons name="star" size={14} color="#FFD700" />
+                        <ThemedText style={{ fontSize: 12, marginLeft: 4 }}>
+                          {item.rating} ({item.reviews})
+                        </ThemedText>
+                      </ThemedView>
+                      <ThemedText style={{ fontSize: 11, opacity: 0.5, marginBottom: 2 }}>
+                        {item.duration}
+                      </ThemedText>
+                      <ThemedText style={{ fontSize: 11, color: '#666', fontStyle: 'italic' }}>
+                        "{item.comments}"
+                      </ThemedText>
+                      <TouchableOpacity
+                        style={{
+                          backgroundColor: '#210883',
+                          padding: 10,
+                          borderRadius: 8,
+                          marginTop: 8,
+                          alignItems: 'center'
+                        }}
+                        onPress={() => {/* Add booking logic */}}
+                      >
+                        <ThemedText style={{ color: '#fff', fontSize: 14, fontWeight: 'bold' }}>
+                          Book Now
+                        </ThemedText>
+                      </TouchableOpacity>
+                    </ThemedView>
+                  ))}
                 </ThemedView>
-              ))}
-            </ThemedView>
-          </ScrollView>
-        </View>
-      ))}
+              </ScrollView>
+            </View>
+          );
+      })}
     </ScrollView>
   );
 }

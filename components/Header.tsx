@@ -7,9 +7,10 @@ import { router } from 'expo-router';
 import React from 'react';
 interface HeaderProps {
     style?: ViewStyle;
+    title?: string;
 }
 
-export function Header({ style }: HeaderProps) {
+export function Header({ style, title = 'Your Bookings' }: HeaderProps) {
     const { user, logout } = useAuth();
     const [showMenu, setShowMenu] = useState(false);
 
@@ -33,7 +34,7 @@ export function Header({ style }: HeaderProps) {
     return (
         <ThemedView style={[styles.headerContainer]}>
             <ThemedText style={styles.headerTitle}>
-                Your Bookings
+                {title}
             </ThemedText>
             <ThemedView style={[styles.container, style]}>
                 <Pressable 

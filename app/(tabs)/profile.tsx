@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { Header } from '@/components/Header';
 import { useAuth } from '@/hooks/auth';
 
 export default function ProfileScreen() {
@@ -28,8 +29,8 @@ export default function ProfileScreen() {
     };
 
     return (
-        <ThemedView style={styles.container}>
-            <ThemedText style={styles.title}>Profile</ThemedText>
+        <ThemedView style={{ flex: 1 }}>
+            <Header title="Profile" />
             
             <ThemedView style={styles.infoContainer}>
                 <ThemedView style={styles.infoRow}>

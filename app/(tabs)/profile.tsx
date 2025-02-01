@@ -35,9 +35,9 @@ export default function ProfileScreen() {
             
             <ThemedView style={styles.profileSection}>
                 <ThemedView style={styles.avatarContainer}>
-                    {user.avatar_url ? (
+                    {(user as any).avatar_url ? (
                         <Image 
-                            source={{ uri: user.avatar_url }} 
+                            source={{ uri: (user as any).avatar_url }} 
                             style={styles.avatar}
                         />
                     ) : (

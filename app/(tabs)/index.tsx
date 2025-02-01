@@ -2,10 +2,11 @@ import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
 import { useAuth } from '@/hooks/auth'
 import { Header } from '@/components/Header'
+import { MenuItems } from '@/components/MenuItems'
 
 export default function HomeScreen() {
     const { user } = useAuth()
-
+    
     const formatDate = (dateString: string | null) => {
         if (!dateString) return 'Not available';
         
@@ -70,6 +71,7 @@ export default function HomeScreen() {
     return (
         <ThemedView style={{ flex: 1 }}>
             <Header title="Home" />
+            <MenuItems />
             <ThemedView style={{ 
                 flex: 1, 
                 justifyContent: 'center', 

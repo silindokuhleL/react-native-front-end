@@ -187,7 +187,7 @@ export function MenuItems() {
                         shadowRadius: 4,
                         elevation: 3,
                       }}
-s                    >
+                    >
                       <ThemedText style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 3 }}>
                         {item.name}
                       </ThemedText>

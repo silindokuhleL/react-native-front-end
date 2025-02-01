@@ -1,10 +1,11 @@
-import { Pressable, StyleSheet, ViewStyle, StatusBar } from 'react-native';
+import { Pressable, StyleSheet, ViewStyle, StatusBar, Modal, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { ThemedText } from './ThemedText';
 import { ThemedView } from './ThemedView';
 import { useAuth } from '@/hooks/auth';
 import { useState } from 'react';
 import { router } from 'expo-router';
 import React from 'react';
+
 interface HeaderProps {
     style?: ViewStyle;
     title?: string;
@@ -13,20 +14,27 @@ interface HeaderProps {
 export function Header({ style, title = 'Your Bookings' }: HeaderProps) {
     const { user, logout } = useAuth();
     const [showMenu, setShowMenu] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+
+    const handleLogout = async () => {
+        await logout();
+        setShowMenu(false);
+        router.replace('/login');  // Changed from '/' to '/login'
+    };
 
     // Add this useEffect
     React.useEffect(() => {
         StatusBar.setBarStyle('light-content');
     }, []);
 
-    const handleLogout = async () => {
-        await logout();
+    const handleProfile = () => {
         setShowMenu(false);
+        router.push('/(tabs)/profile');
     };
 
-    const handleProfile = () => {
-        router.push('/(tabs)/profile');
+    const handleEditProfile = () => {
         setShowMenu(false);
+        setShowEditModal(true);
     };
 
     if (!user) return null;
@@ -47,15 +55,47 @@ export function Header({ style, title = 'Your Bookings' }: HeaderProps) {
                 </Pressable>
 
                 {showMenu && (
-                    <ThemedView style={styles.menu}>
-                        <Pressable onPress={handleProfile} style={styles.menuItem}>
-                            <ThemedText>Profile</ThemedText>
-                        </Pressable>
-                        <Pressable onPress={handleLogout} style={styles.menuItem}>
-                            <ThemedText style={styles.logoutText}>Logout</ThemedText>
-                        </Pressable>
-                    </ThemedView>
+                    <>
+                        <TouchableWithoutFeedback onPress={() => setShowMenu(false)}>
+                            <ThemedView style={styles.overlay} />
+                        </TouchableWithoutFeedback>
+                        <ThemedView style={styles.menu}>
+                            <Pressable onPress={handleEditProfile} style={styles.menuItem}>
+                                <ThemedText>Edit Profile</ThemedText>
+                            </Pressable>
+                            <Pressable onPress={handleProfile} style={styles.menuItem}>
+                                <ThemedText>View Profile</ThemedText>
+                            </Pressable>
+                            <Pressable onPress={handleLogout} style={styles.menuItem}>
+                                <ThemedText style={styles.logoutText}>Logout</ThemedText>
+                            </Pressable>
+                        </ThemedView>
+                    </>
                 )}
+
+                <Modal
+                    visible={showEditModal}
+                    transparent
+                    animationType="slide"
+                    onRequestClose={() => setShowEditModal(false)}
+                >
+                    <TouchableWithoutFeedback onPress={() => setShowEditModal(false)}>
+                        <ThemedView style={styles.modalOverlay}>
+                            <TouchableWithoutFeedback>
+                                <ThemedView style={styles.modalContent}>
+                                    <ThemedText style={styles.modalTitle}>Edit Profile</ThemedText>
+                                    {/* Add your edit profile form here */}
+                                    <TouchableOpacity 
+                                        style={styles.closeButton}
+                                        onPress={() => setShowEditModal(false)}
+                                    >
+                                        <ThemedText style={styles.closeButtonText}>Close</ThemedText>
+                                    </TouchableOpacity>
+                                </ThemedView>
+                            </TouchableWithoutFeedback>
+                        </ThemedView>
+                    </TouchableWithoutFeedback>
+                </Modal>
             </ThemedView>
         </ThemedView>
     );
@@ -123,5 +163,45 @@ const styles = StyleSheet.create({
     },
     logoutText: {
         color: '#FF3B30',
-    }
+    },  // Added comma here
+    overlay: {
+        position: 'absolute',  // Changed 'fixed' to 'absolute'
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'transparent',
+        width: '100%',
+        height: '100%',  // Changed '100vh' to '100%'
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        borderRadius: 15,
+        padding: 20,
+        width: '90%',
+        maxWidth: 400,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    closeButton: {
+        backgroundColor: '#007AFF',
+        padding: 15,
+        borderRadius: 10,
+        marginTop: 20,
+    },
+    closeButtonText: {
+        color: 'white',
+        textAlign: 'center',
+        fontWeight: '600',
+    },
 });

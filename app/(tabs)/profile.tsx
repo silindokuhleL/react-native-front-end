@@ -1,12 +1,24 @@
-import { StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Image, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Header } from '@/components/Header';
 import { useAuth } from '@/hooks/auth';
 import { Ionicons } from '@expo/vector-icons';
+import { useCallback, useState } from 'react';
+import { router } from 'expo-router';
 
 export default function ProfileScreen() {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
+    const [showEditModal, setShowEditModal] = useState(false);
+
+    const handleLogout = useCallback(async () => {
+        await logout();
+        router.replace('/login');  // Changed from '/' to '/login'
+    }, [logout]);
+
+    const handleEditProfile = useCallback(() => {
+        setShowEditModal(true);
+    }, []);
 
     if (!user) return null;
 
@@ -80,16 +92,46 @@ export default function ProfileScreen() {
             </ThemedView>
 
             <ThemedView style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity 
+                    style={styles.button}
+                    onPress={handleEditProfile}
+                >
                     <Ionicons name="settings-outline" size={20} color="#fff" />
                     <ThemedText style={styles.buttonText}>Edit Profile</ThemedText>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={[styles.button, styles.dangerButton]}>
+                <TouchableOpacity 
+                    style={[styles.button, styles.dangerButton]}
+                    onPress={handleLogout}
+                >
                     <Ionicons name="log-out-outline" size={20} color="#fff" />
                     <ThemedText style={styles.buttonText}>Logout</ThemedText>
                 </TouchableOpacity>
             </ThemedView>
+
+            <Modal
+                visible={showEditModal}
+                transparent
+                animationType="slide"
+                onRequestClose={() => setShowEditModal(false)}
+            >
+                <TouchableWithoutFeedback onPress={() => setShowEditModal(false)}>
+                    <ThemedView style={styles.modalOverlay}>
+                        <TouchableWithoutFeedback>
+                            <ThemedView style={styles.modalContent}>
+                                <ThemedText style={styles.modalTitle}>Edit Profile</ThemedText>
+                                {/* Add your edit profile form here */}
+                                <TouchableOpacity 
+                                    style={styles.closeButton}
+                                    onPress={() => setShowEditModal(false)}
+                                >
+                                    <ThemedText style={styles.closeButtonText}>Close</ThemedText>
+                                </TouchableOpacity>
+                            </ThemedView>
+                        </TouchableWithoutFeedback>
+                    </ThemedView>
+                </TouchableWithoutFeedback>
+            </Modal>
         </ThemedView>
     );
 }
@@ -185,6 +227,37 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#fff',
         fontSize: 16,
+        fontWeight: '600',
+    },
+    // Add these new styles
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        borderRadius: 15,
+        padding: 20,
+        width: '90%',
+        maxWidth: 400,
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    closeButton: {
+        backgroundColor: '#007AFF',
+        padding: 15,
+        borderRadius: 10,
+        marginTop: 20,
+    },
+    closeButtonText: {
+        color: 'white',
+        textAlign: 'center',
         fontWeight: '600',
     },
 });

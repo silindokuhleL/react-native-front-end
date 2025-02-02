@@ -1,4 +1,4 @@
-    import axios from '@/lib/axios';
+import axios from '@/lib/axios';
     import { router } from 'expo-router';
     import { useState, useEffect } from 'react';
     import { tokenService } from '@/services/tokenService';
@@ -20,6 +20,15 @@
         email_verified_at: string | null;
         created_at: string;
         updated_at: string;
+    }
+
+    // Add this interface or update existing one
+    interface RegisterData {
+        name: string;
+        email: string;
+        password: string;
+        password_confirmation: string;
+        role: string;
     }
 
     export const useAuth = () => {
@@ -110,12 +119,12 @@
             }
         };
 
-        const register = async (props: { name: string; email: string; password: string; password_confirmation: string }) => {
+        const register = async (data: RegisterData) => {
             setLoading(true);
             setErrors({});
 
             try {
-                const response = await axios.post<RegisterResponse>('/api/register', props);
+                const response = await axios.post<RegisterResponse>('/api/register', data);
 
                 const tokenMatch = response.data.toString().match(/"token":"([^"]+)"/);
                 const token = tokenMatch ? tokenMatch[1] : response.data?.token;

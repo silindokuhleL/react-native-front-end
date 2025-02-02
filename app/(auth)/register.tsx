@@ -3,9 +3,20 @@ import { useAuth } from '@/hooks/auth'
 import React, { useState } from 'react'
 import { ThemedText } from '@/components/ThemedText'
 import { ThemedView } from '@/components/ThemedView'
-import { Image, StyleSheet, ScrollView, TextInput, TouchableOpacity, Dimensions } from 'react-native'
+import { Image, StyleSheet, ScrollView, TextInput, TouchableOpacity, Dimensions, View } from 'react-native'
+import { SelectList } from 'react-native-dropdown-select-list'
 
 const { width } = Dimensions.get('window')
+
+// Remove the 'as const' and make it a regular array
+const AVAILABLE_ROLES = [
+    { key: 'customer', value: 'Customer' },
+    { key: 'salon_owner', value: 'Salon Owner' },
+    { key: 'stylist', value: 'Stylist' },
+    { key: 'receptionist', value: 'Receptionist' }
+]
+
+type RoleType = 'customer' | 'salon_owner' | 'stylist' | 'receptionist' | ''
 
 export default function RegisterScreen() {
     const { register, errors, loading, setErrors } = useAuth()
@@ -14,13 +25,20 @@ export default function RegisterScreen() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+    const [selectedRole, setSelectedRole] = useState<RoleType>('')
 
-    const  handleRegister = async () => {
+    const handleRegister = async () => {
+        if (!selectedRole) {
+            setErrors(prev => ({ ...prev, role: 'Please select a role' }))
+            return
+        }
+
         await register({
             name,
             email,
             password,
             password_confirmation: confirmPassword,
+            role: selectedRole
         })
     }
 
@@ -68,6 +86,36 @@ export default function RegisterScreen() {
                             autoCapitalize="none"
                         />
                         {errors.email && <ThemedText style={styles.fieldError}>{errors.email}</ThemedText>}
+                    </ThemedView>
+
+                    <ThemedView style={styles.inputContainer}>
+                        <SelectList
+                            setSelected={(val: RoleType) => {
+                                setSelectedRole(val)
+                                setErrors(prev => ({ ...prev, role: '' }))
+                            }}
+                            data={AVAILABLE_ROLES}
+                            save="key"
+                            placeholder="Select your role"
+                            search={false}
+                            boxStyles={{
+                                ...styles.input,
+                                ...(errors.role ? styles.inputError : {}),
+                                paddingHorizontal: 16
+                            }}
+                            inputStyles={{ color: '#333', fontSize: 16 }}
+                            dropdownStyles={{
+                                backgroundColor: '#F5F8FA',
+                                borderWidth: 0,
+                                marginTop: 4
+                            }}
+                            dropdownItemStyles={{
+                                paddingVertical: 12,
+                                paddingHorizontal: 16
+                            }}
+                            dropdownTextStyles={{ color: '#333', fontSize: 16 }}
+                        />
+                        {errors.role && <ThemedText style={styles.fieldError}>{errors.role}</ThemedText>}
                     </ThemedView>
 
                     <ThemedView style={styles.inputContainer}>
@@ -127,6 +175,7 @@ export default function RegisterScreen() {
     )
 }
 
+// Add these new styles to your existing StyleSheet
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
@@ -177,7 +226,17 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         borderRadius: 12,
         backgroundColor: '#F5F8FA',
-        overflow: 'hidden',
+    },
+    pickerWrapper: {
+        width: '100%',
+        height: 56,
+        justifyContent: 'center',
+        backgroundColor: '#F5F8FA',
+        borderRadius: 12,
+    },
+    picker: {
+        width: '100%',
+        height: 56,
     },
     input: {
         width: '100%',

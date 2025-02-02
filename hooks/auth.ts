@@ -35,7 +35,22 @@ import axios from '@/lib/axios';
         const [errors, setErrors] = useState<Record<string, string>>({});
         const [loading, setLoading] = useState(false);
         const [user, setUser] = useState<User | null>(null);
-
+    
+        // Remove this first declaration of updateProfile
+        // const updateProfile = async (data: { name: string; email: string }) => {
+        //     try {
+        //         const response = await axios.put('/api/user/update', data);
+        //         if (response.data.user) {
+        //             setUser(response.data.user);
+        //             return true;
+        //         }
+        //         return false;
+        //     } catch (error: any) {
+        //         console.error('Update profile error:', error);
+        //         return false;
+        //     }
+        // };
+    
         useEffect(() => {
             const initializeAuth = async () => {
                 try {
@@ -195,10 +210,35 @@ import axios from '@/lib/axios';
             }
         };
 
+        // Keep this more complete version at the bottom
+        const updateProfile = async (data: { name: string; email: string }) => {
+            setLoading(true);
+            setErrors({});
+    
+            try {
+                const response = await axios.put<{ user: User }>('/api/user/update', data);
+                setUser(response.data.user);
+                return true;
+            } catch (error: any) {
+                console.error('Update profile error:', error);
+                if (error.response?.data?.errors) {
+                    setErrors(error.response.data.errors);
+                } else {
+                    setErrors({
+                        general: error.response?.data?.message || 'Update failed. Please try again.'
+                    });
+                }
+                return false;
+            } finally {
+                setLoading(false);
+            }
+        };
+
         return {
             login,
             register,
             logout,
+            updateProfile,
             errors,
             loading,
             setErrors,

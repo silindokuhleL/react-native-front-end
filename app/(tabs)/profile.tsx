@@ -17,10 +17,11 @@ type User = {
 };
 
 export default function ProfileScreen() {
-    const { user, logout } = useAuth();
+    const { user, logout, updateProfile } = useAuth();
     const [showEditModal, setShowEditModal] = useState(false);
     const [editName, setEditName] = useState('');
     const [editEmail, setEditEmail] = useState('');
+    const [isUpdating, setIsUpdating] = useState(false);
 
     const handleEditProfile = useCallback(() => {
         if (!user) return;
@@ -29,14 +30,27 @@ export default function ProfileScreen() {
         setShowEditModal(true);
     }, [user]);
 
-    const handleUpdateProfile = useCallback(() => {
+    const handleUpdateProfile = useCallback(async () => {
         if (!user) return;
-        console.log('Updating profile with:', {
-            name: editName,
-            email: editEmail
-        });
-        setShowEditModal(false);
-    }, [editName, editEmail, user]);
+        
+        setIsUpdating(true);
+        try {
+            console.log('Updating profile with:', { name: editName, email: editEmail });
+            const success = await updateProfile({
+                name: editName,
+                email: editEmail
+            });
+
+            console.log('Update result:', success);
+            if (success) {
+                setShowEditModal(false);
+            }
+        } catch (error) {
+            console.error('Update failed:', error);
+        } finally {
+            setIsUpdating(false);
+        }
+    }, [editName, editEmail, user, updateProfile]);
 
     const handleLogout = useCallback(async () => {
         await logout();
@@ -170,10 +184,13 @@ export default function ProfileScreen() {
                                 </ThemedView>
 
                                 <TouchableOpacity 
-                                    style={styles.button}
+                                    style={[styles.button, isUpdating && { opacity: 0.7 }]}
                                     onPress={handleUpdateProfile}
+                                    disabled={isUpdating}
                                 >
-                                    <ThemedText style={styles.buttonText}>Update Profile</ThemedText>
+                                    <ThemedText style={styles.buttonText}>
+                                        {isUpdating ? 'Updating...' : 'Update Profile'}
+                                    </ThemedText>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity 

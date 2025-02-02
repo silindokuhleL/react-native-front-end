@@ -65,7 +65,7 @@
 
             initializeAuth();
         }, []);
-    
+
         const login = async (props: { email: string; password: string }) => {
             setLoading(true);
             setErrors({});

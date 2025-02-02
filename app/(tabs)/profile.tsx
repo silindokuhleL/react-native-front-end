@@ -1,4 +1,4 @@
-import { StyleSheet, Image, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Image, TouchableOpacity, Modal, TouchableWithoutFeedback, TextInput } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Header } from '@/components/Header';
@@ -7,19 +7,41 @@ import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useState } from 'react';
 import { router } from 'expo-router';
 
+type User = {
+    name: string;
+    email: string;
+    roles: string[];
+    created_at: string | null;
+    email_verified_at: string | null;
+    avatar_url?: string;
+};
+
 export default function ProfileScreen() {
     const { user, logout } = useAuth();
     const [showEditModal, setShowEditModal] = useState(false);
+    const [editName, setEditName] = useState('');
+    const [editEmail, setEditEmail] = useState('');
+
+    const handleEditProfile = useCallback(() => {
+        if (!user) return;
+        setEditName(user.name);
+        setEditEmail(user.email);
+        setShowEditModal(true);
+    }, [user]);
+
+    const handleUpdateProfile = useCallback(() => {
+        if (!user) return;
+        console.log('Updating profile with:', {
+            name: editName,
+            email: editEmail
+        });
+        setShowEditModal(false);
+    }, [editName, editEmail, user]);
 
     const handleLogout = useCallback(async () => {
         await logout();
-        router.replace('/login');  // Changed from '/' to '/login'
+        router.replace('/login');
     }, [logout]);
-
-    const handleEditProfile = useCallback(() => {
-        setShowEditModal(true);
-    }, []);
-
     if (!user) return null;
 
     const formatDate = (dateString: string | null) => {
@@ -125,12 +147,40 @@ export default function ProfileScreen() {
                         <TouchableWithoutFeedback>
                             <ThemedView style={styles.modalContent}>
                                 <ThemedText style={styles.modalTitle}>Edit Profile</ThemedText>
-                                {/* Add your edit profile form here */}
+                                
+                                <ThemedView style={styles.formGroup}>
+                                    <ThemedText style={styles.formLabel}>Name</ThemedText>
+                                    <TextInput
+                                        style={styles.input}
+                                        value={editName}
+                                        onChangeText={setEditName}
+                                        placeholder="Enter your name"
+                                    />
+                                </ThemedView>
+
+                                <ThemedView style={styles.formGroup}>
+                                    <ThemedText style={styles.formLabel}>Email</ThemedText>
+                                    <TextInput
+                                        style={styles.input}
+                                        value={editEmail}
+                                        onChangeText={setEditEmail}
+                                        placeholder="Enter your email"
+                                        keyboardType="email-address"
+                                    />
+                                </ThemedView>
+
+                                <TouchableOpacity 
+                                    style={styles.button}
+                                    onPress={handleUpdateProfile}
+                                >
+                                    <ThemedText style={styles.buttonText}>Update Profile</ThemedText>
+                                </TouchableOpacity>
+
                                 <TouchableOpacity 
                                     style={styles.closeButton}
                                     onPress={() => setShowEditModal(false)}
                                 >
-                                    <ThemedText style={styles.closeButtonText}>Close</ThemedText>
+                                    <ThemedText style={styles.closeButtonText}>Cancel</ThemedText>
                                 </TouchableOpacity>
                             </ThemedView>
                         </TouchableWithoutFeedback>
@@ -265,4 +315,26 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: '600',
     },
+    formGroup: {
+        marginBottom: 15,
+    },
+    formLabel: {
+        fontSize: 16,
+        marginBottom: 5,
+        fontWeight: '500',
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 8,
+        padding: 10,
+        fontSize: 16,
+    },
+    // Remove or comment out the updateButton style since we're not using it anymore
+    // updateButton: {
+    //     backgroundColor: '#4CAF50',
+    //     padding: 15,
+    //     borderRadius: 10,
+    //     marginTop: 20,
+    // },
 });

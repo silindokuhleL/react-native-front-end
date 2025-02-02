@@ -155,7 +155,7 @@ export default function ProfileScreen() {
                 transparent
                 animationType="slide"
                 onRequestClose={() => setShowEditModal(false)}
-            >
+            > 
                 <TouchableWithoutFeedback onPress={() => setShowEditModal(false)}>
                     <ThemedView style={styles.modalOverlay}>
                         <TouchableWithoutFeedback>

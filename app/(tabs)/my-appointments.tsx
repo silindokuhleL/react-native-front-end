@@ -1,12 +1,11 @@
-import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import React from 'react';
 import { View } from 'react-native';
 
-export default function SavedScreen() {
+export default function MyAppointmentsScreen() {
   return (
     <View style={{ flex: 1, padding: 20 }}>
-      <ThemedText>Saved Items</ThemedText>
+      <ThemedText>My Appointments</ThemedText>
     </View>
   );
 }

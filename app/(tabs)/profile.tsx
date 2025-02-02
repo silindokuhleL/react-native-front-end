@@ -43,8 +43,6 @@ export default function ProfileScreen() {
 
     return (
         <ThemedView style={styles.container}>
-            <Header title="Profile" />
-            
             <ThemedView style={styles.profileSection}>
                 <ThemedView style={styles.avatarContainer}>
                     {(user as any).avatar_url ? (

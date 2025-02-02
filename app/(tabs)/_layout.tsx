@@ -1,17 +1,33 @@
-import { Tabs } from 'expo-router';
+import { Tabs, Href } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../../hooks/auth';
 import { hasRole } from '../../utils/permissions';
 import { useEffect } from 'react';
 
-const TAB_CONFIG = [
+// Add type for valid Ionicons names
+type IoniconsNames = keyof typeof Ionicons.glyphMap;
+
+interface TabConfig {
+  name: string;
+  options: {
+    title: string;
+    headerTitle?: string;
+    headerShown?: boolean;
+    href: Href;
+    icon: IoniconsNames;  // Update icon type
+    roleRequired?: 'admin' | 'customer';
+    useOutline?: boolean;
+  };
+}
+
+const TAB_CONFIG: TabConfig[] = [
   {
     name: 'index',
     options: {
       title: 'Home',
       headerShown: false,
-      href: '/',
-      icon: 'home'
+      href: { pathname: '/' },
+      icon: 'home-outline' as IoniconsNames
     }
   },
   {
@@ -19,8 +35,8 @@ const TAB_CONFIG = [
     options: {
       title: 'All Bookings',
       headerTitle: 'Manage Bookings',
-      href: '/bookings',
-      icon: 'calendar',
+      href: { pathname: '/bookings' },
+      icon: 'calendar-outline' as IoniconsNames,
       roleRequired: 'admin'
     }
   },
@@ -55,7 +71,7 @@ const TAB_CONFIG = [
     name: 'notifications',
     options: {
       title: 'Notifications',
-      href: '/notifications',
+      href: { pathname: '/notifications' },
       icon: 'notifications',
       roleRequired: 'customer'
     }
@@ -94,7 +110,7 @@ export default function TabLayout() {
             tabBarIcon: ({ color, size, focused }) => (
               <Ionicons
                 name={tab.options.useOutline && !focused 
-                  ? `${tab.options.icon}-outline` 
+                  ? `${tab.options.icon}-outline` as IoniconsNames
                   : tab.options.icon}
                 size={size}
                 color={tab.options.useOutline && focused ? "#ff3b30" : color}

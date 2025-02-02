@@ -1,14 +1,11 @@
-import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import { Header } from '@/components/Header';
+import React from 'react';
+import { View } from 'react-native';
 
-export default function BookingsScreen() {
+export default function AdminBookingsScreen() {
   return (
-    <ThemedView style={{ flex: 1 }}>
-      <Header title="Your Bookings" />
-      <ThemedView style={{ flex: 1, padding: 20 }}>
-        <ThemedText>Your bookings will appear here</ThemedText>
-      </ThemedView>
-    </ThemedView>
+    <View style={{ flex: 1, padding: 20 }}>
+      <ThemedText>All Bookings (Admin)</ThemedText>
+    </View>
   );
 }

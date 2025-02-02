@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     button: {
-        backgroundColor: '#007AFF',
+        backgroundColor: '#f542f5',
         borderRadius: 10,
         padding: 15,
         flexDirection: 'row',
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FF3B30',
     },
     buttonText: {
-        color: '#fff',
+        color: '#FFFFFF',  // Changed to white
         fontSize: 16,
         fontWeight: '600',
     },

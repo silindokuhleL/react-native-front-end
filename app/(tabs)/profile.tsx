@@ -72,6 +72,13 @@ export default function ProfileScreen() {
                 </ThemedView>
 
                 <ThemedView style={styles.infoRow}>
+                    <ThemedText style={styles.label}>Role:</ThemedText>
+                    <ThemedText style={styles.value}>
+                        {user.roles[0]?.charAt(0).toUpperCase() + user.roles[0]?.slice(1).replace('_', ' ') || 'No role assigned'}
+                    </ThemedText>
+                </ThemedView>
+
+                <ThemedView style={styles.infoRow}>
                     <ThemedText style={styles.label}>Email:</ThemedText>
                     <ThemedText style={styles.value}>{user.email}</ThemedText>
                 </ThemedView>

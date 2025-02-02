@@ -26,72 +26,72 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           headerShown: false,
+          href: '/',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size} color={color} />
           ),
         }}
       />
       
-      {isAdmin && (
-        <Tabs.Screen
-          name="bookings"
-          options={{
-            title: 'All Bookings',
-            headerTitle: 'Manage Bookings',
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="calendar" size={size} color={color} />
-            ),
-          }}
-        />
-      )}
+      <Tabs.Screen
+        name="bookings"
+        options={{
+          title: 'All Bookings',
+          headerTitle: 'Manage Bookings',
+          href: isAdmin ? '/bookings' : null,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="calendar" size={size} color={color} />
+          ),
+        }}
+      />
       
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
+          href: '/profile',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),
         }}
       />
       
-      {isCustomer && (
-        <>
-          <Tabs.Screen
-            name="saved"
-            options={{
-              title: 'Saved',
-              tabBarIcon: ({ focused, size }) => (
-                <Ionicons 
-                  name={focused ? "heart" : "heart-outline"} 
-                  size={size} 
-                  color={focused ? "#ff3b30" : "#666"}
-                />
-              ),
-            }}
-          />
-          
-          <Tabs.Screen
-            name="my-bookings"
-            options={{
-              title: 'My Bookings',
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="book" size={size} color={color} />
-              ),
-            }}
-          />
-          
-          <Tabs.Screen
-            name="notifications"
-            options={{
-              title: 'Notifications',
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="notifications" size={size} color={color} />
-              ),
-            }}
-          />
-        </>
-      )}
+      <Tabs.Screen
+        name="saved"
+        options={{
+          title: 'Saved',
+          href: isCustomer ? '/saved' : null,
+          tabBarIcon: ({ focused, size }) => (
+            <Ionicons 
+              name={focused ? "heart" : "heart-outline"} 
+              size={size} 
+              color={focused ? "#ff3b30" : "#666"}
+            />
+          ),
+        }}
+      />
+      
+      <Tabs.Screen
+        name="my-bookings"
+        options={{
+          title: 'My Bookings',
+          href: isCustomer ? '/my-bookings' : null,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="book" size={size} color={color} />
+          ),
+        }}
+      />
+      
+      <Tabs.Screen
+        name="notifications"
+        options={{
+          title: 'Notifications',
+          href: isCustomer ? '/notifications' : null,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="notifications" size={size} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

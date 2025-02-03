@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, FlatList, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import axios from '@/lib/axios';
 import { Ionicons } from '@expo/vector-icons';
@@ -62,6 +62,10 @@ export default function ManageServicesScreen() {
   }
 
   // Update the icon usage in renderItem
+  // Add this near the top imports
+  const defaultImage = require('@/assets/images/haircut.jpg');
+  
+  // Update the renderItem function to include the image
   const renderItem = ({ item }: { item: Service }) => (
     <View style={styles.serviceCard}>
       <View style={styles.serviceHeader}>
@@ -74,6 +78,10 @@ export default function ManageServicesScreen() {
       </View>
       <ThemedText style={styles.serviceName}>{item.name}</ThemedText>
       <ThemedText style={styles.serviceDescription}>{item.description}</ThemedText>
+      <Image 
+        source={item.image_path ? { uri: item.image_path } : defaultImage}
+        style={styles.serviceImage}
+      />
       <View style={styles.serviceDetails}>
         <ThemedText>Price: ₱{item.price}</ThemedText>
         <ThemedText>Duration: {item.duration}</ThemedText>
@@ -189,5 +197,11 @@ const styles = StyleSheet.create({
   },
   retryButton: {
     backgroundColor: '#210883',
+  },
+  serviceImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginVertical: 8,
   },
 });

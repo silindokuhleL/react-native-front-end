@@ -225,7 +225,7 @@ export default function TabLayout() {
   const getTabAccess = (roleRequired?: string) => {
     if (!roleRequired) return true;
     const hasAccess = hasRole(user, roleRequired);
-    console.log(`Checking access for role ${roleRequired}:`, hasAccess);
+    // console.log(`Checking access for role ${roleRequired}:`, hasAccess);
     return hasAccess;
   };
 

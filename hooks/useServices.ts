@@ -12,6 +12,7 @@ export interface Service {
   rating: number;
   reviews: number;
   comments: string;
+  image_path?: string;  // Add this line, make it optional with ?
   category: {
     name: string;
     icon: keyof typeof Ionicons.glyphMap;

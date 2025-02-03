@@ -29,6 +29,26 @@ const TAB_CONFIG: TabConfig[] = [
       icon: 'home-outline' as IoniconsNames
     }
   },
+  // Add these new configurations
+  {
+    name: 'bookings',
+    options: {
+      title: 'Bookings',
+      headerTitle: 'Manage Bookings',
+      href: { pathname: '/bookings' },
+      icon: 'calendar-sharp' as IoniconsNames,
+      roleRequired: 'receptionist'
+    }
+  },
+  {
+    name: 'my-bookings',
+    options: {
+      title: 'My Bookings',
+      href: { pathname: '/my-bookings' },
+      icon: 'calendar-number' as IoniconsNames,
+      useOutline: true
+    }
+  },
   // Service Provider pages
   {
     name: 'manage-services',

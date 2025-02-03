@@ -14,7 +14,7 @@ interface TabConfig {
     headerShown?: boolean;
     href: Href;
     icon: IoniconsNames;  
-    roleRequired?: 'admin' | 'salon_owner' | 'receptionist' | 'stylist' | 'inventory_manager' | 'marketing_manager' | 'accountant' | 'customer';
+    roleRequired?: 'admin' | 'salon_owner' | 'receptionist' | 'stylist' | 'inventory_manager' | 'marketing_manager' | 'accountant' | 'customer' | 'service_provider';
     useOutline?: boolean;
   };
 }
@@ -27,6 +27,17 @@ const TAB_CONFIG: TabConfig[] = [
       headerShown: false,
       href: { pathname: '/' },
       icon: 'home-outline' as IoniconsNames
+    }
+  },
+  // Service Provider pages
+  {
+    name: 'manage-services',
+    options: {
+      title: 'My Services',
+      headerTitle: 'Manage Services',
+      href: { pathname: '/manage-services' },
+      icon: 'list-outline' as IoniconsNames,
+      roleRequired: 'service_provider'
     }
   },
   // Admin pages
@@ -193,7 +204,9 @@ export default function TabLayout() {
 
   const getTabAccess = (roleRequired?: string) => {
     if (!roleRequired) return true;
-    return hasRole(user, roleRequired);
+    const hasAccess = hasRole(user, roleRequired);
+    console.log(`Checking access for role ${roleRequired}:`, hasAccess);
+    return hasAccess;
   };
 
   return (

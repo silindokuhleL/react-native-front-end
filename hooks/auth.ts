@@ -35,31 +35,17 @@ import axios from '@/lib/axios';
         const [errors, setErrors] = useState<Record<string, string>>({});
         const [loading, setLoading] = useState(false);
         const [user, setUser] = useState<User | null>(null);
-    
-        // Remove this first declaration of updateProfile
-        // const updateProfile = async (data: { name: string; email: string }) => {
-        //     try {
-        //         const response = await axios.put('/api/user/update', data);
-        //         if (response.data.user) {
-        //             setUser(response.data.user);
-        //             return true;
-        //         }
-        //         return false;
-        //     } catch (error: any) {
-        //         console.error('Update profile error:', error);
-        //         return false;
-        //     }
-        // };
+
     
         useEffect(() => {
             const initializeAuth = async () => {
                 try {
                     const token = await tokenService.getToken();
-                    console.log('Token found:', token); // Debug token
+                    console.log('Token found:', token);
 
                     if (token) {
                         const userResponse = await axios.get<User>('/api/user');
-                        console.log('User response:', userResponse.data); // Debug user response
+                        console.log('User response:', userResponse.data);
 
                         // Parse user data if it's embedded in HTML
                         let userData = userResponse.data;

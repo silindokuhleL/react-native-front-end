@@ -7,14 +7,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useState } from 'react';
 import { router } from 'expo-router';
 
-type User = {
-    name: string;
-    email: string;
-    roles: string[];
-    created_at: string | null;
-    email_verified_at: string | null;
-    avatar_url?: string;
-};
+// type User = {
+//     name: string;
+//     email: string;
+//     roles: string[];
+//     created_at: string | null;
+//     email_verified_at: string | null;
+//     avatar_url?: string;
+// };
 
 export default function ProfileScreen() {
     const { user, logout, updateProfile } = useAuth();

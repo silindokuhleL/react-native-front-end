@@ -5,7 +5,6 @@ const TOKEN_KEY = '@auth_token';
 
 export const tokenService = {
     async setToken(token: string) {
-        // Set token in axios default headers
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         // Store token in AsyncStorage
         await AsyncStorage.setItem(TOKEN_KEY, token);
@@ -16,7 +15,6 @@ export const tokenService = {
     },
 
     async removeToken() {
-        // Remove token from axios default headers
         delete axios.defaults.headers.common['Authorization'];
         // Remove token from AsyncStorage
         await AsyncStorage.removeItem(TOKEN_KEY);

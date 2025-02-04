@@ -1,8 +1,7 @@
-import { Tabs, Href } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { useAuth } from '@/hooks/auth';
-import { hasRole } from '@/utils/permissions';
-import { useEffect } from 'react';
+import {useAuth} from '@/hooks/auth';
+import {Href, Tabs} from 'expo-router';
+import {Ionicons} from '@expo/vector-icons';
+import {hasRole} from '@/utils/permissions';
 
 type IoniconsNames = keyof typeof Ionicons.glyphMap;
 
@@ -29,7 +28,6 @@ const TAB_CONFIG: TabConfig[] = [
       icon: 'home-outline' as IoniconsNames
     }
   },
-  // Add these new configurations
   {
     name: 'bookings',
     options: {
@@ -49,7 +47,6 @@ const TAB_CONFIG: TabConfig[] = [
       useOutline: true
     }
   },
-  // Service Provider pages
   {
     name: 'manage-services',
     options: {
@@ -60,7 +57,6 @@ const TAB_CONFIG: TabConfig[] = [
       roleRequired: 'service_provider'
     }
   },
-  // Admin pages
   {
     name: 'system-settings',
     options: {
@@ -81,7 +77,6 @@ const TAB_CONFIG: TabConfig[] = [
       roleRequired: 'admin'
     }
   },
-  // Salon Owner pages
   {
     name: 'salon-dashboard',
     options: {
@@ -91,7 +86,6 @@ const TAB_CONFIG: TabConfig[] = [
       roleRequired: 'salon_owner'
     }
   },
-  // Receptionist pages
   {
     name: 'appointments',
     options: {
@@ -110,7 +104,6 @@ const TAB_CONFIG: TabConfig[] = [
       roleRequired: 'receptionist'
     }
   },
-  // Stylist pages
   {
     name: 'schedule',
     options: {
@@ -120,7 +113,6 @@ const TAB_CONFIG: TabConfig[] = [
       roleRequired: 'stylist'
     }
   },
-  // Inventory Manager pages
   {
     name: 'inventory',
     options: {
@@ -130,7 +122,6 @@ const TAB_CONFIG: TabConfig[] = [
       roleRequired: 'inventory_manager'
     }
   },
-  // Marketing Manager pages
   {
     name: 'promotions',
     options: {
@@ -149,7 +140,6 @@ const TAB_CONFIG: TabConfig[] = [
       roleRequired: 'marketing_manager'
     }
   },
-  // Accountant pages
   {
     name: 'financial-reports',
     options: {
@@ -168,7 +158,6 @@ const TAB_CONFIG: TabConfig[] = [
       roleRequired: 'accountant'
     }
   },
-  // Customer pages
   {
     name: 'book',
     options: {
@@ -194,18 +183,18 @@ const TAB_CONFIG: TabConfig[] = [
     options: {
       title: 'Saved',
       href: '/saved',
-      icon: 'heart',
+      icon: 'heart-outline' as IoniconsNames,  // Changed from 'heart'
       roleRequired: 'customer',
       useOutline: true
     }
   },
-  // Common pages for all users
   {
     name: 'profile',
     options: {
       title: 'Profile',
       href: '/profile',
-      icon: 'person'
+      icon: 'person-outline' as IoniconsNames,  // Changed from 'person'
+      useOutline: true
     }
   },
   {
@@ -213,7 +202,7 @@ const TAB_CONFIG: TabConfig[] = [
     options: {
       title: 'Notifications',
       href: { pathname: '/notifications' },
-      icon: 'notifications',
+      icon: 'notifications-outline' as IoniconsNames,  // Changed from 'notifications'
       useOutline: true
     }
   }
@@ -224,9 +213,7 @@ export default function TabLayout() {
 
   const getTabAccess = (roleRequired?: string) => {
     if (!roleRequired) return true;
-    const hasAccess = hasRole(user, roleRequired);
-    // console.log(`Checking access for role ${roleRequired}:`, hasAccess);
-    return hasAccess;
+    return hasRole(user, roleRequired);
   };
 
   return (
@@ -248,15 +235,12 @@ export default function TabLayout() {
           options={{
             ...tab.options,
             href: getTabAccess(tab.options.roleRequired) ? tab.options.href : null,
-            tabBarIcon: ({ color, size, focused }) => (
-              <Ionicons
-                name={tab.options.useOutline && !focused 
-                  ? `${tab.options.icon}-outline` as IoniconsNames
-                  : tab.options.icon}
-                size={size}
-                color={tab.options.useOutline && focused ? "#ff3b30" : color}
-              />
-            ),
+            tabBarIcon: ({ focused, color, size }) => {
+              const iconName = (focused && tab.options.useOutline
+                ? tab.options.icon.replace('-outline', '')
+                : tab.options.icon) as IoniconsNames;
+              return <Ionicons name={iconName} size={size} color={color} />;
+            },
           }}
         />
       ))}
